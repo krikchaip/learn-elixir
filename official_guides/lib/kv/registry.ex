@@ -1,7 +1,7 @@
 defmodule KV.Registry do
   use GenServer
 
-  # Client APIs
+  # ** Client APIs
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, opts)
@@ -15,7 +15,7 @@ defmodule KV.Registry do
     GenServer.cast(server, {:create, name})
   end
 
-  # Defining GenServer Callbacks
+  # ** Defining GenServer Callbacks
 
   @impl true
   def init(:ok) do

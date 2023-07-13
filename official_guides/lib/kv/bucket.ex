@@ -1,10 +1,10 @@
 defmodule KV.Bucket do
-  # will define a child_spec/1 function,
-  # so your module can be used as a child in a supervision tree.
+  # ** will define a child_spec/1 function,
+  # ** so your module can be used as a child in a supervision tree.
   use Agent
 
-  # It is a convention to define a start_link/1 function
-  # that always accepts a list of options
+  # ** It is a convention to define a start_link/1 function
+  # ** that always accepts a list of options
   @spec start_link(keyword()) :: Agent.agent()
   def start_link(_opts \\ []) do
     Agent.start_link(fn -> %{} end)

@@ -1,8 +1,8 @@
 defmodule KV.Bucket.Test do
-  # makes the test case run in parallel with other :async test cases
+  # ** makes the test case run in parallel with other :async test cases
   use ExUnit.Case, async: true
 
-  # it's like beforeEach in some Javascript testing framework
+  # ** it's like beforeEach in some Javascript testing framework
   setup do
     {:ok, bucket} = KV.Bucket.start_link([])
     %{bucket: bucket}
