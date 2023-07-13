@@ -6,7 +6,7 @@ defmodule KV.Bucket do
   # It is a convention to define a start_link/1 function
   # that always accepts a list of options
   @spec start_link(keyword()) :: Agent.agent()
-  def start_link(opts \\ []) do
+  def start_link(_opts \\ []) do
     Agent.start_link(fn -> %{} end)
   end
 
