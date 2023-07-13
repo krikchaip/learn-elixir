@@ -16,6 +16,15 @@ defmodule KV.Registry.Test do
     KV.Registry.create(registry, "shopping")
 
     # ** assert pattern to match
-    assert {:ok, bucket} = KV.Registry.lookup(registry, "shopping")
+    assert {:ok, _} = KV.Registry.lookup(registry, "shopping")
+  end
+
+  test "removes buckets on exit", %{registry: registry} do
+    KV.Registry.create(registry, "shopping")
+    {:ok, bucket} = KV.Registry.lookup(registry, "shopping")
+
+    Agent.stop(bucket)
+
+    assert KV.Registry.lookup(registry, "shopping") == :error
   end
 end
