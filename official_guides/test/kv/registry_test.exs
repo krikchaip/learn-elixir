@@ -21,9 +21,23 @@ defmodule KV.Registry.Test do
 
   test "removes buckets on exit", %{registry: registry} do
     KV.Registry.create(registry, "shopping")
-    {:ok, bucket} = KV.Registry.lookup(registry, "shopping")
+    {:ok, shopping} = KV.Registry.lookup(registry, "shopping")
 
-    Agent.stop(bucket)
+    # ** sending :normal exit reason -> {:DOWN, ref, ...}
+    Agent.stop(shopping)
+
+    assert KV.Registry.lookup(registry, "shopping") == :error
+  end
+
+  test "removes bucket on crash", %{registry: registry} do
+    KV.Registry.create(registry, "shopping")
+    {:ok, shopping} = KV.Registry.lookup(registry, "shopping")
+
+    # ** sending :shutdown exit reason -> {:EXIT, ref, ...}
+    Agent.stop(shopping, :shutdown)
+
+    # ** PS. all linked processes receive an EXIT signal,
+    # ** causing the linked process to also terminate unless it is trapping exits
 
     assert KV.Registry.lookup(registry, "shopping") == :error
   end

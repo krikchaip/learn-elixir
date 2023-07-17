@@ -55,7 +55,7 @@ defmodule KV.Registry do
   end
 
   @impl true
-  # ** will receive message from Agent.stop(bucket) because of line#48
+  # ** will receive message from Agent.stop(bucket, :normal) call because of line#48
   def handle_info({:DOWN, ref, :process, _pid, _reason} = _msg, {names, refs}) do
     # ** remove related record from the state
     {name, refs} = Map.pop(refs, ref)
