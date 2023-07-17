@@ -2,7 +2,7 @@ defmodule KV.Registry.Test do
   use ExUnit.Case
 
   setup do
-    # ** ✅ recommended pattern to start process. It calls Module.start_link/1 underneath.
+    # ** ✅ recommended pattern to start process in isolation. It calls Module.start_link/1 underneath.
     # ** ExUnit will guarantee that the registry process will be shutdown before the next test starts.
     registry = start_supervised!(KV.Registry)
 
