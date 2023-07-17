@@ -42,7 +42,10 @@ defmodule KV.Registry do
       {:noreply, state}
     else
       # ** start bucket process and link to registry server process
-      {:ok, bucket} = KV.Bucket.start_link([])
+      # {:ok, bucket} = KV.Bucket.start_link([])
+
+      # ** use DynamicSupervisor to handle bucket process instead
+      {:ok, bucket} = DynamicSupervisor.start_child(KV.BucketSupervisor, KV.Bucket)
 
       # ** registry process will supervise bucket process during creation
       ref = Process.monitor(bucket)
