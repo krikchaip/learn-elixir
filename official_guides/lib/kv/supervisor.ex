@@ -11,7 +11,8 @@ defmodule KV.Supervisor do
       {DynamicSupervisor, name: KV.BucketSupervisor, strategy: :one_for_one},
 
       # ** KV.Registry requires DynamicSupervisor to be started before itself
-      {KV.Registry, name: KV.Registry}
+      # {KV.Registry, name: KV.Registry}
+      {KV.EtsRegistry, name: KV.EtsRegistry}
     ]
 
     # ** if any of the children dies, kill and restart others
