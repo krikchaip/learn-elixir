@@ -49,8 +49,8 @@ defmodule KV.Registry do
 
       # ** registry process will supervise bucket process during creation
       ref = Process.monitor(bucket)
-      refs = Map.put(refs, ref, name)
 
+      refs = Map.put(refs, ref, name)
       names = Map.put(names, name, bucket)
 
       {:noreply, {names, refs}}
