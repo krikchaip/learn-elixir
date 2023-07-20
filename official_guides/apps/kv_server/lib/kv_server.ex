@@ -13,6 +13,9 @@ defmodule KVServer do
       # Starts a worker by calling: KVServer.Worker.start_link(arg)
       # {KVServer.Worker, arg}
 
+      # required by the Acceptor below
+      {Task.Supervisor, name: KVServer.TaskSupervisor},
+
       # Executes a given function inside a new process
       # that will be part of a supervision tree
       # calling Task.start_link(fn ... end)

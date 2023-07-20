@@ -36,7 +36,17 @@ defmodule KVServer.Acceptor do
   defp accept_for_client(socket) do
     case :gen_tcp.accept(socket) do
       {:ok, client} ->
-        serve(client)
+        # (non-blocking) starts serving client under Task.Supervisor
+        {:ok, serve_pid} =
+          Task.Supervisor.start_child(
+            KVServer.TaskSupervisor,
+            fn -> serve(client) end
+          )
+
+        # will close a socket during client exits rather than letting the Acceptor crashes
+        :ok = :gen_tcp.controlling_process(client, serve_pid)
+
+        # await the next client
         accept_for_client(socket)
 
       {:error, _reason} = err ->
