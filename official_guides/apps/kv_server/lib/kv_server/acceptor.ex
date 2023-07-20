@@ -50,6 +50,7 @@ defmodule KVServer.Acceptor do
     client
     |> read_line
     |> write_line
+    |> serve
   end
 
   @spec read_line(socket) :: {socket, binary()} when socket: :gen_tcp.socket()
@@ -58,9 +59,9 @@ defmodule KVServer.Acceptor do
     {socket, line}
   end
 
-  @spec write_line({socket, binary()}) :: :ok when socket: :gen_tcp.socket()
+  @spec write_line({socket, binary()}) :: socket when socket: :gen_tcp.socket()
   defp write_line({socket, line}) do
-    :gen_tcp.send(socket, line)
-    :ok
+    :ok = :gen_tcp.send(socket, line)
+    socket
   end
 end
