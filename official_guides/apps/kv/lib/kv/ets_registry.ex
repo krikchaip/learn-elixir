@@ -1,4 +1,4 @@
-defmodule KV.EtsRegistry do
+defmodule KV.ETSRegistry do
   use GenServer
 
   # ** Client APIs

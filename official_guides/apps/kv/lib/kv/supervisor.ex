@@ -12,7 +12,7 @@ defmodule KV.Supervisor do
 
       # ** KV.Registry requires DynamicSupervisor to be started before itself
       # {KV.Registry, name: KV.Registry}
-      {KV.EtsRegistry, name: KV.EtsRegistry}
+      {KV.ETSRegistry, name: KV.ETSRegistry}
     ]
 
     # ** if any of the children dies, kill and restart others

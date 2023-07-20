@@ -1,27 +1,27 @@
-defmodule KV.EtsRegistry.Test do
+defmodule KV.ETSRegistry.Test do
   use ExUnit.Case
 
   setup context do
     # ** each test requires different ETS table
     # ** so we use test name as table name to remain isolation
-    start_supervised!({KV.EtsRegistry, name: context.test})
+    start_supervised!({KV.ETSRegistry, name: context.test})
 
     %{registry: context.test}
   end
 
   test "spawn buckets", %{registry: registry} do
-    assert KV.EtsRegistry.lookup(registry, "shopping") == :error
+    assert KV.ETSRegistry.lookup(registry, "shopping") == :error
 
     # ** synchronous call
-    KV.EtsRegistry.create(registry, "shopping")
+    KV.ETSRegistry.create(registry, "shopping")
 
     # ** assert pattern to match
-    assert {:ok, _} = KV.EtsRegistry.lookup(registry, "shopping")
+    assert {:ok, _} = KV.ETSRegistry.lookup(registry, "shopping")
   end
 
   test "removes buckets on exit", %{registry: registry} do
-    KV.EtsRegistry.create(registry, "shopping")
-    {:ok, shopping} = KV.EtsRegistry.lookup(registry, "shopping")
+    KV.ETSRegistry.create(registry, "shopping")
+    {:ok, shopping} = KV.ETSRegistry.lookup(registry, "shopping")
 
     # ** sending :normal exit reason -> {:DOWN, ref, ...}
     Agent.stop(shopping)
@@ -30,12 +30,12 @@ defmodule KV.EtsRegistry.Test do
     # ** Do a call to ensure the registry processed the DOWN message
     KV.Registry.create(registry, "wait until handle_info finishes")
 
-    assert KV.EtsRegistry.lookup(registry, "shopping") == :error
+    assert KV.ETSRegistry.lookup(registry, "shopping") == :error
   end
 
   test "removes bucket on crash", %{registry: registry} do
-    KV.EtsRegistry.create(registry, "shopping")
-    {:ok, shopping} = KV.EtsRegistry.lookup(registry, "shopping")
+    KV.ETSRegistry.create(registry, "shopping")
+    {:ok, shopping} = KV.ETSRegistry.lookup(registry, "shopping")
 
     # ** sending :shutdown exit reason -> {:EXIT, ref, ...}
     Agent.stop(shopping, :shutdown)
@@ -44,12 +44,12 @@ defmodule KV.EtsRegistry.Test do
     # ** Do a call to ensure the registry processed the DOWN message
     KV.Registry.create(registry, "wait until handle_info finishes")
 
-    assert KV.EtsRegistry.lookup(registry, "shopping") == :error
+    assert KV.ETSRegistry.lookup(registry, "shopping") == :error
   end
 
   test "crashed bucket should not be usable", %{registry: registry} do
-    KV.EtsRegistry.create(registry, "shopping")
-    {:ok, shopping} = KV.EtsRegistry.lookup(registry, "shopping")
+    KV.ETSRegistry.create(registry, "shopping")
+    {:ok, shopping} = KV.ETSRegistry.lookup(registry, "shopping")
 
     # ** Simulate a bucket crash by explicitly and synchronously shutting it down
     # ** sending :shutdown exit reason -> {:EXIT, ref, ...}
