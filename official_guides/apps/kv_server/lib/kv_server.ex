@@ -7,9 +7,16 @@ defmodule KVServer do
 
   @impl true
   def start(_type, _args) do
+    port = System.get_env("PORT", "4040") |> String.to_integer()
+
     children = [
       # Starts a worker by calling: KVServer.Worker.start_link(arg)
       # {KVServer.Worker, arg}
+
+      # Executes a given function inside a new process
+      # that will be part of a supervision tree
+      # calling Task.start_link(fn ... end)
+      {Task, fn -> KVServer.Acceptor.accept(port) end}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
