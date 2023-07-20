@@ -19,7 +19,14 @@ defmodule KVServer do
       # Executes a given function inside a new process
       # that will be part of a supervision tree
       # calling Task.start_link(fn ... end)
-      {Task, fn -> KVServer.Acceptor.accept(port) end}
+
+      # {Task, fn -> KVServer.Acceptor.accept(port) end},
+
+      # Override Task's default restart policy
+      Supervisor.child_spec(
+        {Task, fn -> KVServer.Acceptor.accept(port) end},
+        restart: :temporary
+      )
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
