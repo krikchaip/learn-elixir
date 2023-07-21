@@ -1,4 +1,10 @@
 defmodule KVServer.Command do
+  @type command ::
+          {:create, bucket :: String.t()}
+          | {:get, bucket :: String.t(), key :: String.t()}
+          | {:put, bucket :: String.t(), key :: String.t(), value :: term()}
+          | {:delete, bucket :: String.t(), key :: String.t()}
+
   # ** uses "~S" to prevent the \r\n characters from being converted
   @doc ~S"""
   Parses the given `line` into a command.
@@ -30,16 +36,7 @@ defmodule KVServer.Command do
       {:error, :unknown_command}
 
   """
-  @spec parse(line :: String.t()) :: {:ok, command}
-        when command:
-               {:create, bucket}
-               | {:get, bucket, key}
-               | {:put, bucket, key, value}
-               | {:delete, bucket, key},
-             bucket: String.t(),
-             key: String.t(),
-             value: term()
-
+  @spec parse(line :: String.t()) :: {:ok, command()} | {:error, :unknown_command}
   def parse(line) do
     case String.split(line) do
       ["CREATE", bucket] -> {:ok, {:create, bucket}}
