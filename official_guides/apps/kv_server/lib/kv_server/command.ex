@@ -46,4 +46,12 @@ defmodule KVServer.Command do
       _ -> {:error, :unknown_command}
     end
   end
+
+  @doc """
+  Runs the given command.
+  """
+  @spec run(command()) :: term()
+  def run(_command) do
+    {:ok, "OK\r\n"}
+  end
 end

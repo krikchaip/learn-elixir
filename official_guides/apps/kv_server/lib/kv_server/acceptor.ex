@@ -1,4 +1,6 @@
 defmodule KVServer.Acceptor do
+  alias KVServer.Command
+
   require Logger
 
   @doc """
@@ -57,21 +59,32 @@ defmodule KVServer.Acceptor do
   # ** Reads a line from the socket and writes those lines back to the socket.
   @spec serve(:gen_tcp.socket()) :: no_return()
   defp serve(client) do
-    client
-    |> read_line
-    |> write_line
-    |> serve
-  end
+    output =
+      with {:ok, line} <- :gen_tcp.recv(client, 0),
+           {:ok, command} <- Command.parse(line),
+           do: Command.run(command)
 
-  @spec read_line(socket) :: {socket, binary()} when socket: :gen_tcp.socket()
-  defp read_line(socket) do
-    {:ok, line} = :gen_tcp.recv(socket, 0)
-    {socket, line}
-  end
+    case output do
+      {:ok, text} ->
+        :gen_tcp.send(client, text)
 
-  @spec write_line({socket, binary()}) :: socket when socket: :gen_tcp.socket()
-  defp write_line({socket, line}) do
-    :ok = :gen_tcp.send(socket, line)
-    socket
+      # ** Known error; write to the client
+      # ** source -> Command.parse/1
+      {:error, :unknown_command} ->
+        :gen_tcp.send(client, "UNKNOWN COMMAND\r\n")
+
+      # ** The connection was closed, exit politely
+      # ** source -> :gen_tcp.recv/2
+      {:error, :closed} ->
+        exit(:shutdown)
+
+      # ** Unknown error; write to the client and exit
+      {:error, error} ->
+        :gen_tcp.send(client, "ERROR\r\n")
+        exit(error)
+    end
+
+    # ** await the next commands from the client
+    serve(client)
   end
 end
