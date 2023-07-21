@@ -9,7 +9,7 @@ defmodule KV.ETSRegistry do
   `:name` is always required.
   """
   def start_link(opts \\ []) do
-    # 1. Pass the name to GenServer's init
+    # ** 1. Pass the name to GenServer's init
     table_name = Keyword.fetch!(opts, :name)
 
     # ** table name and registry process name are the same at this point
@@ -22,7 +22,7 @@ defmodule KV.ETSRegistry do
   Returns `{:ok, pid}` if the bucket exists, `:error` otherwise.
   """
   def lookup(registry, name) do
-    # 3. Lookup is now done directly in ETS, without accessing the server
+    # ** 3. Lookup is now done directly in ETS, without accessing the server
     case :ets.lookup(registry, name) do
       [{^name, bucket_pid}] -> {:ok, bucket_pid}
       [] -> :error
@@ -33,7 +33,7 @@ defmodule KV.ETSRegistry do
   Ensures there is a bucket associated with the given `name` in `server`.
   """
   def create(registry, name) do
-    # 7. To prevent race conditions
+    # ** 7. To prevent race conditions
     GenServer.call(registry, {:create, name})
   end
 
@@ -44,7 +44,7 @@ defmodule KV.ETSRegistry do
   """
   @impl GenServer
   def init(table_name) do
-    # 2. We have replaced the names map by the ETS table
+    # ** 2. We have replaced the names map by the ETS table
     # ** ets((name: string) => (bucket: pid))
     names =
       :ets.new(table_name, [
@@ -60,12 +60,12 @@ defmodule KV.ETSRegistry do
     {:ok, {names, refs}}
   end
 
-  # 4. The previous handle_call callback for lookup was removed
+  # ** 4. The previous handle_call callback for lookup was removed
   # def handle_call(_request, _from, _state)
 
   @impl GenServer
   def handle_call({:create, name}, _from, {names, refs} = state) do
-    # 5. Read and write to the ETS table instead of the map
+    # ** 5. Read and write to the ETS table instead of the map
     case lookup(names, name) do
       {:ok, bucket_pid} ->
         {:reply, bucket_pid, state}
@@ -86,7 +86,7 @@ defmodule KV.ETSRegistry do
 
   @impl GenServer
   def handle_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
-    # 6. Delete from the ETS table instead of the map
+    # ** 6. Delete from the ETS table instead of the map
     {name, refs} = Map.pop(refs, ref)
     :ets.delete(names, name)
 

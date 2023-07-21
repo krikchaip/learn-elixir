@@ -9,7 +9,7 @@ defmodule KVServer.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
 
-      # in-umbrella specific configs
+      # ** in-umbrella specific configs
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
