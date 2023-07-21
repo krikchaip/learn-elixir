@@ -78,6 +78,11 @@ defmodule KVServer.Acceptor do
       {:error, :closed} ->
         exit(:shutdown)
 
+      # ** Handle when no bucket found
+      # ** source -> KV.Registry.lookup/2
+      {:error, :not_found} ->
+        :gen_tcp.send(client, "NOT FOUND\r\n")
+
       # ** Unknown error; write to the client and exit
       {:error, error} ->
         :gen_tcp.send(client, "ERROR\r\n")
