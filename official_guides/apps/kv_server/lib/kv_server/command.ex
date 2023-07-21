@@ -1,4 +1,7 @@
 defmodule KVServer.Command do
+  alias KV.Bucket
+  alias KV.ETSRegistry, as: Registry
+
   @type command ::
           {:create, bucket :: String.t()}
           | {:get, bucket :: String.t(), key :: String.t()}
@@ -50,8 +53,39 @@ defmodule KVServer.Command do
   @doc """
   Runs the given command.
   """
-  @spec run(command()) :: term()
-  def run(_command) do
+  @spec run(command()) :: {:ok, String.t()} | {:error, :not_found}
+  def run(command)
+
+  def run({:create, bucket}) do
+    Registry.create(Registry, bucket)
     {:ok, "OK\r\n"}
+  end
+
+  def run({:get, bucket, key}) do
+    lookup(bucket, fn bucket_pid ->
+      value = Bucket.get(bucket_pid, key)
+      {:ok, "#{value}\r\nOK\r\n"}
+    end)
+  end
+
+  def run({:put, bucket, key, value}) do
+    lookup(bucket, fn bucket_pid ->
+      Bucket.put(bucket_pid, key, value)
+      {:ok, "OK\r\n"}
+    end)
+  end
+
+  def run({:delete, bucket, key}) do
+    lookup(bucket, fn bucket_pid ->
+      Bucket.delete(bucket_pid, key)
+      {:ok, "OK\r\n"}
+    end)
+  end
+
+  defp lookup(bucket, callback) do
+    case Registry.lookup(Registry, bucket) do
+      {:ok, bucket_pid} -> callback.(bucket_pid)
+      :error -> {:error, :not_found}
+    end
   end
 end
