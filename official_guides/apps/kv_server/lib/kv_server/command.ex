@@ -57,8 +57,12 @@ defmodule KVServer.Command do
   def run(command)
 
   def run({:create, bucket}) do
-    Registry.create(Registry, bucket)
-    {:ok, "OK\r\n"}
+    {mod, fun, args} = {Registry, :create, [Registry, bucket]}
+
+    case KV.Router.route(bucket, mod, fun, args) do
+      bucket_pid when is_pid(bucket_pid) -> {:ok, "OK\r\n"}
+      _ -> {:error, "FAILED TO CREATE BUCKET"}
+    end
   end
 
   def run({:get, bucket, key}) do
@@ -83,7 +87,11 @@ defmodule KVServer.Command do
   end
 
   defp lookup(bucket, callback) do
-    case Registry.lookup(Registry, bucket) do
+    {mod, fun, args} = {Registry, :lookup, [Registry, bucket]}
+
+    # ** Instead of directly looking up the registry,
+    # ** we are using the router instead to match a specific node
+    case KV.Router.route(bucket, mod, fun, args) do
       {:ok, bucket_pid} -> callback.(bucket_pid)
       :error -> {:error, :not_found}
     end
