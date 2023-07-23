@@ -8,6 +8,7 @@ defmodule KV.Supervisor do
   @impl true
   def init(:ok) do
     children = [
+      {Task.Supervisor, name: KV.RouterTasks},
       {DynamicSupervisor, name: KV.BucketSupervisor, strategy: :one_for_one},
 
       # ** KV.Registry requires DynamicSupervisor to be started before itself
