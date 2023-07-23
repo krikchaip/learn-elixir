@@ -14,18 +14,18 @@ defmodule KV.Router do
 
     node_name = elem(entry, 1)
 
-    # If the entry node is the current node, apply as-is
+    # ** If the entry node is the current node, apply as-is
     if node_name == node() do
       apply(mod, fun, args)
     else
-      # Otherwise, apply it on the other node
+      # ** Otherwise, apply it on the other node
       {KV.RouterTasks, node_name}
       |> Task.Supervisor.async(mod, fun, args)
       |> Task.await()
     end
   end
 
-  # will raise an exception when an entry is out of range.
+  # ** will raise an exception when an entry is out of range.
   defp no_entry_error(bucket) do
     raise "could not find entry for #{inspect(bucket)} in table #{inspect(table())}"
   end
@@ -34,7 +34,7 @@ defmodule KV.Router do
   The routing table.
   """
   def table do
-    # Replace computer-name with your local machine name
+    # ** Replace computer-name with your local machine name
     [
       {?a..?m, :"a@Krikchais-MacBook-Pro-M1"},
       {?n..?z, :"b@Krikchais-MacBook-Pro-M1"}
