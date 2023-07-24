@@ -26,8 +26,19 @@ defmodule OfficialGuides.MixProject do
     [
       # ** deploy all applications in the umbrella to a node
       # ** that will work as both TCP server and key-value storage
-      monolith: [
-        applications: [kv: :permanent, kv_server: :permanent]
+      # monolith: [
+      #   applications: [kv: :permanent, kv_server: :permanent]
+      # ],
+
+      # ** set the cookie option on both releases to the same value
+      # ** in order for them to allow connections from each other
+      a: [
+        cookie: "weknoweachother",
+        applications: [kv_server: :permanent, kv: :permanent]
+      ],
+      b: [
+        cookie: "weknoweachother",
+        applications: [kv: :permanent]
       ]
     ]
   end
