@@ -30,14 +30,18 @@ defmodule KV.Router do
     raise "could not find entry for #{inspect(bucket)} in table #{inspect(table())}"
   end
 
-  @doc """
-  The routing table.
+  @doc ~S"""
+  The routing table (replace \<computer-name\> with your local machine name).
+
+  ### Example
+  ```
+  [
+    {?a..?m, :"a@Krikchais-MacBook-Pro-M1"},
+    {?n..?z, :"b@Krikchais-MacBook-Pro-M1"}
+  ]
+  ```
   """
-  def table do
-    # ** Replace computer-name with your local machine name
-    [
-      {?a..?m, :"a@Krikchais-MacBook-Pro-M1"},
-      {?n..?z, :"b@Krikchais-MacBook-Pro-M1"}
-    ]
+  def table() do
+    Application.fetch_env!(:kv, :routing_table)
   end
 end

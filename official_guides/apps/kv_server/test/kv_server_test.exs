@@ -34,7 +34,7 @@ defmodule KVServer.Test do
     %{server: server}
   end
 
-  @tag distributed: true
+  # @tag :distributed
   # @tag distributed: true
   test "server interaction", %{server: server} do
     assert send_and_recv(server, "UNKNOWN shopping\r\n") == "UNKNOWN COMMAND\r\n"
