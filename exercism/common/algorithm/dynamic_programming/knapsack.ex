@@ -7,22 +7,22 @@ defmodule Knapsack do
           maximum_weight :: integer
         ) :: integer
   def maximum_value(items, maximum_weight) do
-    # backtrack(items, maximum_weight)
+    # recursive(items, maximum_weight)
     # memoize(items, maximum_weight)
     tabulate(items, maximum_weight)
   end
 
-  defp backtrack(_items = [], _w), do: 0
-  defp backtrack(_items, _w = 0), do: 0
+  defp recursive(_items = [], _w), do: 0
+  defp recursive(_items, _w = 0), do: 0
 
-  defp backtrack([i | rest], w) when w < i.weight do
-    backtrack(rest, w)
+  defp recursive([i | rest], w) when w < i.weight do
+    recursive(rest, w)
   end
 
-  defp backtrack(items = [i | rest], w) do
+  defp recursive(items = [i | rest], w) do
     max(
-      i.value + backtrack(List.delete(items, i), w - i.weight),
-      backtrack(rest, w)
+      i.value + recursive(List.delete(items, i), w - i.weight),
+      recursive(rest, w)
     )
   end
 
